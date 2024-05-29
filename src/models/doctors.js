@@ -1,5 +1,13 @@
 const mongoose = require("mongoose");
 
+const SlotSchema = new mongoose.Schema(
+  {
+    start: { type: String, required: true },
+    end: { type: String, required: true },
+  },
+  { _id: true } // To prevent MongoDB from creating an _id field for each slot
+);
+
 const DrSchema = new mongoose.Schema(
   {
     firstName: { type: String, required: true },
@@ -35,7 +43,8 @@ const DrSchema = new mongoose.Schema(
     role: { type: String, require:true },
     consent: { type: Boolean, required: true },
     userId: { type: String, required: true }, // Updated to reference User model
-    patients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Patient' }] // Adjust reference as needed
+    patients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Patient' }], // Adjust reference as needed
+    slots: [SlotSchema] // Add the slots array
   },
   { collection: "doctors", versionKey: false }
 );

@@ -32,6 +32,7 @@ router.get("/get", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const doctorId = req.params.id;
+    console.log("🚀 ~ router.put ~ doctorId:", doctorId)
     const update = req.body;
     const updatedDoctor = await Doctor.findByIdAndUpdate(doctorId, update, { new: true });
 
@@ -62,7 +63,6 @@ router.delete("/:id", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const doctorId = req.params.id;
-    console.log("🚀 ~ router.get ~ doctorId:", doctorId)
     const doctor = await Doctor.findOne({userId:doctorId})
     if (!doctor) {
       return res.status(404).json({ error: "Doctor not found" });

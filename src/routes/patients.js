@@ -2,40 +2,64 @@ const express = require('express');
 const Patient = require('../models/patients');
 const router = express.Router();
 
-router.post("/post", async (req, res) => {
-  console.log("🚀 ~ router.post ~ req:", req.body);
+// router.post("/post", async (req, res) => {
+//   console.log("🚀 ~ router.post ~ req:", req.body);
   
-  try {
-    // Check if the phone number already exists
-    const existingPatient = await Patient.findOne({ phoneNumber: req.body.phoneNumber });
-    if (existingPatient) {
-      return res.status(400).json({ error: "Phone number already exists, plz change phone number" });
-    }
+//   try {
+//     // Check if the phone number already exists
+//     const existingPatient = await Patient.findOne({ phoneNumber: req.body.phoneNumber });
+//     if (existingPatient) {
+//       return res.status(400).json({ error: "Phone number already exists, plz change phone number" });
+//     }
 
-    const userData = new Patient({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      age: req.body.age,
-      patientCNIC: req.body.patientCNIC,
-      gender: req.body.gender,
-      phoneNumber: req.body.phoneNumber,
-      email: req.body.email,
-      city: req.body.city,
-      address: req.body.address,
-      availabilityHour: req.body.availabilityHour,
-      medicalHistory: req.body.medicalHistory,
-      consent: req.body.consent,
-      drId: req.body.drId,
-      drName: req.body.drName,
-      selectedDate: req.body.selectedDate || Date.now(),
+//     const userData = new Patient({
+//       firstName: req.body.firstName,
+//       lastName: req.body.lastName,
+//       age: req.body.age,
+//       patientCNIC: req.body.patientCNIC,
+//       gender: req.body.gender,
+//       phoneNumber: req.body.phoneNumber,
+//       email: req.body.email,
+//       city: req.body.city,
+//       address: req.body.address,
+//       availabilityHour: req.body.availabilityHour,
+//       medicalHistory: req.body.medicalHistory,
+//       consent: req.body.consent,
+//       drId: req.body.drId,
+//       drName: req.body.drName,
+//       selectedDate: req.body.selectedDate || Date.now(),
+//     });
+
+//     const result = await userData.save();
+//     console.log("🚀 ~ router.post ~ result:", result);
+//     res.json(result);
+//   } catch (error) {
+//     console.log("🚀 ~ router.post ~ error:", error);
+//     res.status(500).json({ error: "Something went wrong!", error });
+//   }
+// });
+
+router.post('/post', async (req, res) => {
+  try {
+    const { drId, selectedDate, availabilityHour, ...patientData } = req.body;
+
+    // Log the request body for debugging
+    console.log("🚀 ~ router.post ~ req.body:", req.body);
+
+    // Ensure drId and availabilityHour are included in the patient data
+    const newPatient = new Patient({
+      ...patientData,
+      drId,
+      availabilityHour,
+      selectedDate
     });
 
-    const result = await userData.save();
-    console.log("🚀 ~ router.post ~ result:", result);
-    res.json(result);
+    await newPatient.save();
+
+    res.json({ message: "Patient information submitted and doctor's slot updated successfully" });
   } catch (error) {
-    console.log("🚀 ~ router.post ~ error:", error);
-    res.status(500).json({ error: "Something went wrong!", error });
+    console.error('Error booking appointment:', error);
+    res.status(500).json({ error: "Something went wrong!" });
   }
 });
 
